@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+ <meta charset="UTF-8">
+ <title>地域</title>
+
+ <link
+ href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+ rel="stylesheet">
+
+  <link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+   rel="stylesheet">
+
+ <style>
+ html{
+    scroll-behavior:smooth;
+ }
+
+ section{
+    scroll-margin-top:80px;
+    min-height:500px;
+ }
+ </style>
+
+</head>
+
+<body>
+
+ <!-- Navbar -->
+     <nav class="navbar navbar-expand-lg  navbar-dark"
+	  style="background-color:  #3b785a;">
+        <div class="container-fluid px-1 flex-column">
+
+            <!-- 上段　-->
+         <div class="d-flex align-items-center py-3">
+          <!-- ロゴ　-->
+             <div class="navbar-nav flex-row align-items-center me-5">
+             <a class="navbar-brand nav-link fs-4 me-5" href="index2.html">
+                <i class="bi bi-house-fill"></i>
+             </a>
+
+			        <a class="text-center text-white fs-4" href="マイページ.html">
+				       <i class="bi bi-person-circle"></i>
+			          </a>
+             </div>
+
+            <!-- 検索　-->
+         <form class="d-flex w-75">
+
+            <input class="form-cotrol-lg"
+              type="search"
+              placeholder="地域や料理を検索"
+              style="width: 500px">
+
+            <button class="btn btn-outline-light ms-2"
+             type="submit">
+            
+             <i class="bi bi-search">
+             </i>
+            </button>
+          </form>
+
+         </div>
+            
+         <div class="d-flex align-items-center">
+
+         <!--　メニュー　-->
+         <div class="text-center text-white mx-auto flex-row ">
+
+		     <a class="text-center text-white px-4" href="地域2.html">
+			     地域
+		       </a>
+
+		    <a class="text-center text-white px-4" href="#食文化">
+			     食文化
+		      </a>
+
+		     <a class="text-center text-white px-4" href="#ランキング">
+		    	ランキング
+		     </a>
+
+		     <a class="text-center text-white px-4" href="#投稿">
+			   投稿
+		     </a>
+	     </div>
+     </div>
+     </nav>
+
+     </div>
+   </div>
+ </nav>
+
+<main style="max-width: 800px; margin: 0 auto; padding: 20px;">
+     <svg id="japan-map" viewBox="0 0 1000 900" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+         
+         <g fill="#3b785a" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" style="cursor: pointer;">
+             <path id="region-hokkaido" d="M790,20 L870,80 L940,90 L920,130 L870,140 L850,220 L810,230 L730,170 L710,190 L680,160 L700,100 L750,90 Z" />
+             <path id="region-tohoku" d="M730,240 L780,270 L760,410 L700,410 L700,320 L710,270 Z" />
+             <path id="region-kanto" d="M700,410 L760,410 L750,490 L710,510 L680,480 L670,440 Z" />
+             <path id="region-chubu" d="M700,320 L700,410 L670,440 L650,490 L590,470 L590,390 L640,350 Z" />
+             <path id="region-kansai" d="M590,390 L590,470 L580,510 L540,510 L520,440 L550,390 Z" />
+             <path id="region-chugoku" d="M520,440 L540,510 L400,490 L400,440 L460,420 Z" />
+             <path id="region-shikoku" d="M520,520 L530,560 L440,560 L430,510 Z" />
+             <path id="region-kyushu" d="M390,500 L410,550 L390,660 L330,660 L310,580 L340,510 Z" />
+             <path id="region-okinawa" d="M100,530 L180,570 L140,610 L60,570 Z" />
+         </g>
+
+         <path d="M40,480 L220,480 L220,660" fill="none" stroke="#ccc" stroke-width="2" />
+
+         <g fill="#ffffff" font-size="20" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="pointer-events: none;">
+             <text x="830" y="110">北海道</text>
+             <text x="740" y="320">東北</text>
+             <text x="720" y="455">関東</text>
+             <text x="650" y="410">中部</text>
+             <text x="565" y="445">関西</text>
+             <text x="460" y="450">中国</text>
+             <text x="480" y="540">四国</text>
+             <text x="365" y="575">九州</text>
+             <text x="120" y="570">沖縄</text>
+         </g>
+     </svg>
+ </main>
+
+ <script>
+     const map = document.getElementById('japan-map');
+     
+     // 1. 全体の初期座標 [X, Y, 幅, 高さ]
+     const defaultBox = [0, 0, 1000, 900];
+     
+     // 2. 各地方ごとのズーム先座標（きれいに中央に収まるように細かく調整しました）
+     const zoomBoxes = {
+         'hokkaido': [660, 0, 300, 260],
+         'tohoku':   [640, 200, 200, 240],
+         'kanto':    [620, 370, 200, 180],
+         'chubu':    [540, 280, 220, 240],
+         'kansai':   [480, 350, 180, 200],
+         'chugoku':  [360, 380, 220, 180],
+         'shikoku':  [390, 470, 180, 140],
+         'kyushu':   [270, 460, 180, 240],
+         'okinawa':  [20, 440, 200, 260]
+     };
+     
+     let currentBox = [...defaultBox];
+     let targetBox = [...defaultBox];
+     let currentZoomedRegion = null; // 現在どこがズームされているかを記録
+     let animationFrameId = null;
+
+     // ぬるっと動くアニメーションの計算エンジン
+     function animate() {
+         let moving = false;
+         const ease = 0.06; // ぬるぬる度合い（数値を小さくするほどさらにゆっくり、大きくするとキビキビ動きます）
+
+         for (let i = 0; i < 4; i++) {
+             const diff = targetBox[i] - currentBox[i];
+             if (Math.abs(diff) > 0.05) {
+                 currentBox[i] += diff * ease;
+                 moving = true;
+             } else {
+                 currentBox[i] = targetBox[i];
+             }
+         }
+
+         map.setAttribute('viewBox', currentBox.join(' '));
+
+         if (moving) {
+             animationFrameId = requestAnimationFrame(animate);
+         } else {
+             animationFrameId = null;
+         }
+     }
+
+     function startAnimation(target) {
+         targetBox = target;
+         if (!animationFrameId) {
+             animationFrameId = requestAnimationFrame(animate);
+         }
+     }
+
+     // すべての地域（path）にクリックイベントとホバーイベントを一括登録
+     Object.keys(zoomBoxes).forEach(region => {
+         const el = document.getElementById(`region-${region}`);
+         if (!el) return;
+
+         // マウスを乗せたときに明るくする（全地域共通）
+         el.style.transition = 'fill 0.2s';
+         el.addEventListener('mouseover', () => el.style.fill = '#4caf50');
+         el.addEventListener('mouseout', () => el.style.fill = '#3b785a');
+
+         // クリックしたときのズーム切り替え
+         el.addEventListener('click', function(e) {
+             e.stopPropagation(); // 背景クリックとのバッティング防止
+             
+             if (currentZoomedRegion === region) {
+                 // すでにズームされている場所をもう一度押したら元に戻る
+                 startAnimation(defaultBox);
+                 currentZoomedRegion = null;
+             } else {
+                 // 新しい場所にぬるっとズーム
+                 startAnimation(zoomBoxes[region]);
+                 currentZoomedRegion = region;
+             }
+         });
+     });
+
+     // 地図の背景（海や余白）をクリックしたらどこからでも元の全体図に戻る
+     map.addEventListener('click', function() {
+         if (currentZoomedRegion !== null) {
+             startAnimation(defaultBox);
+             currentZoomedRegion = null;
+         }
+     });
+ </script>
+
+ <footer class="text-center text-white py-4 mt-5" style="background-color:#3b785a;">
+     <footer class="text-center text-white py-4 mt-5" style="background-color:#3b785a;">
+         <p class="mb-1 fw-bold">
+             食の旅
+         </p>
+         <p class="mb-0 small">
+             Made in 2026 
+         </p>
+     </footer>
+
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+ </body>
+</html>
